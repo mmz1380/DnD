@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from .enums import Race, CharacterClass
+from .enums import Race, CharacterClass, EnvironmentType
 
 
 class TimeStampMixin:
@@ -44,3 +44,27 @@ class GamePlayer(models.Model, TimeStampMixin):
 
     class Meta:
         unique_together = ('game', 'player')
+
+
+class NPC(models.Model, TimeStampMixin):
+    name = models.CharField(_('Name'), max_length=100)
+    description = models.TextField(_('Description'), blank=True)
+
+
+class EnemyType(models.Model, TimeStampMixin):
+    name = models.CharField(_('Name'), max_length=100)
+
+
+class Enemy(models.Model, TimeStampMixin):
+    name = models.CharField(_('Name'), max_length=100)
+    description = models.TextField(_('Description'), blank=True)
+    hp = models.IntegerField(_('HP'))
+    min_power = models.IntegerField(_('Min. Power'))
+    max_power = models.IntegerField(_('Max. Power'))
+    enemy_type = models.ForeignKey(EnemyType, related_name='enemies', on_delete=models.CASCADE)
+
+
+class Structure(models.Model, TimeStampMixin):
+    name = models.CharField(_('Name'), max_length=100)
+    area = models.IntegerField(_('Area'))
+    environment_type = models.CharField(_('Environment Type'), max_length=20, choices=EnvironmentType.choices)
